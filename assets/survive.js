@@ -1,12 +1,15 @@
-/* 猫猫求生（躲避生存） · 纯前端，零依赖 */
+/* 猫猫求生（躲避生存） · 纯前端，零依赖；含全站排行榜对接 */
 const $=s=>document.querySelector(s);
 const cv=$('#cv'), X=cv.getContext('2d'), W=cv.width, H=cv.height;
 const FONT='-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif';
 const BEST_KEY='sbjumao_survive_best';
+const API='/api/scores', GAME='survive';
+const escH=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const rand=(a,b)=>Math.random()*(b-a)+a;
 const TAU=Math.PI*2;
 const dd=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 let best=+(localStorage.getItem(BEST_KEY)||0);
+let lastScore=0, lastT=0, pendRank=0;
 
 /* —— 音效：Web Audio 合成，无外部文件 —— */
 let actx=null, muted=false;
@@ -233,7 +236,7 @@ function overlay(){
     X.font='bold 19px '+FONT;
     if(ns>=best&&ns>0){X.fillStyle='#2fe3b4';X.fillText('🏆 新纪录！',W/2,H/2+30);}
     else{X.fillStyle='#838fa1';X.fillText('最高 '+best+' 分',W/2,H/2+30);}
-    X.fillStyle='#2fe3b4';X.font='15px '+FONT;X.fillText('点「开始游戏」或按空格再来一局',W/2,H/2+64);
+    X.fillStyle='#2fe3b4';X.font='15px '+FONT;X.fillText('下方留名上榜 · 空格再来一局',W/2,H/2+64);
   }else{
     X.fillStyle='#2fe3b4';X.font='bold 34px '+FONT;X.fillText('🐱 猫猫求生',W/2,H/2-34);
     X.fillStyle='#cdd6e3';X.font='16px '+FONT;X.fillText('躲开飞来的尖刺，捡鱼涨分',W/2,H/2+2);
@@ -264,12 +267,58 @@ function syncHud(){
 }
 
 /* —— 流程 —— */
-function reset(){g=fresh();cat.x=W/2;cat.y=H/2;cat.vx=cat.vy=0;cat.dir={x:0,y:-1};syncHud();render();}
+function reset(){g=fresh();cat.x=W/2;cat.y=H/2;cat.vx=cat.vy=0;cat.dir={x:0,y:-1};hideSubmit();syncHud();render();}
 function begin(){audioOn();g=fresh();g.run=true;cat.x=W/2;cat.y=H/2;cat.vx=cat.vy=0;cat.dir={x:0,y:-1};
-  g.last=performance.now();SFX.go();requestAnimationFrame(loop);}
+  pendRank=0;hideSubmit();g.last=performance.now();SFX.go();requestAnimationFrame(loop);}
 function over(){g.run=false;g.over=true;const ns=Math.floor(g.score);
-  if(ns>best){best=ns;localStorage.setItem(BEST_KEY,best);}syncHud();SFX.over();render();}
+  if(ns>best){best=ns;localStorage.setItem(BEST_KEY,best);}
+  lastScore=ns;lastT=g.t;syncHud();SFX.over();render();showSubmit(ns);}
 function loop(now){const dt=Math.min(.033,(now-g.last)/1000||0);g.last=now;update(dt);render();if(g.run)requestAnimationFrame(loop);}
+
+/* —— 排行榜 —— */
+function hideSubmit(){const b=$('#subbar');if(b)b.hidden=true;}
+function showSubmit(score){
+  const b=$('#subbar');if(!b)return;
+  b.hidden=false;
+  b.innerHTML='<span class="submsg">本局 <b>'+score+'</b> 分</span>'+
+    '<input id="subName" class="subname" maxlength="12" placeholder="留个名字上榜">'+
+    '<button class="btn go" id="subBtn" style="flex:0 0 auto">上传成绩</button>';
+  const nm=$('#subName');try{nm.value=localStorage.getItem('sbjumao_name')||'';}catch(e){}
+  nm.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();submitScore();}});
+  $('#subBtn').onclick=submitScore;
+}
+async function submitScore(){
+  const nm=$('#subName'),btn=$('#subBtn');if(!nm||!btn)return;
+  const name=nm.value.trim();
+  btn.disabled=true;btn.textContent='上传中…';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({game:GAME,name,score:lastScore,t:lastT})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.ok){
+      try{localStorage.setItem('sbjumao_name',name);}catch(e){}
+      pendRank=d.rank||0;
+      const b=$('#subbar');b.innerHTML='<span class="subdone">✅ 已上榜'+(d.rank?' · 第 '+d.rank+' 名':'')+'</span>';
+      fetchBoard();
+    }else{
+      const tip=d&&d.error==='implausible'?'分数异常':d&&d.error==='rate limited'?'太频繁':'失败';
+      btn.disabled=false;btn.textContent=tip+' · 重试';
+    }
+  }catch(e){ btn.disabled=false;btn.textContent='网络错误 · 重试'; }
+}
+async function fetchBoard(){
+  const list=$('#lbList');if(!list)return;
+  try{
+    const r=await fetch(API+'?game='+GAME+'&ts='+Date.now(),{cache:'no-store'});
+    const d=await r.json();const top=(d.top||[]).slice(0,10);
+    if(!top.length){list.innerHTML='<li class="lbempty">还没有人上榜，来当第一个！</li>';return;}
+    list.innerHTML=top.map((e,i)=>{
+      const cls='lbrow'+(i<3?' t'+(i+1):'')+((i+1)===pendRank?' me':'');
+      return '<li class="'+cls+'"><span class="lbrk">'+(i+1)+'</span><span class="lbname">'+escH(e.name)+
+        '</span><span class="lbsc">'+e.score+'</span><span class="lbt">'+(Number(e.t)||0).toFixed(1)+'″</span></li>';
+    }).join('');
+  }catch(e){ list.innerHTML='<li class="lbfail">排行榜加载失败，点刷新重试</li>'; }
+}
 
 /* —— 输入 —— */
 function localPt(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
@@ -277,7 +326,8 @@ cv.addEventListener('pointermove',e=>{const p=localPt(e);pointer.x=p.x;pointer.y
 cv.addEventListener('pointerdown',e=>{audioOn();const p=localPt(e);pointer.x=p.x;pointer.y=p.y;pointer.active=true;if(!g||!g.run)begin();});
 cv.addEventListener('pointerleave',()=>{pointer.active=false;});
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
-  if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();
+  if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k)){if(document.activeElement&&document.activeElement.tagName==='INPUT')return;e.preventDefault();}
+  if(document.activeElement&&document.activeElement.tagName==='INPUT')return;
   if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'].includes(k))pointer.active=false;
   if(k===' '){if(!g||!g.run)begin();else dash();return;}
   keys.add(k);});
@@ -288,4 +338,6 @@ $('#start').onclick=begin;
 $('#reset').onclick=reset;
 $('#mute').onclick=()=>{muted=!muted;$('#mute').textContent=muted?'🔇':'🔊';if(!muted)audioOn();};
 const _yr=$('#yr');if(_yr)_yr.textContent=new Date().getFullYear();
+const lbr=$('#lbRefresh');if(lbr)lbr.onclick=()=>{pendRank=0;fetchBoard();};
+fetchBoard();
 reset();

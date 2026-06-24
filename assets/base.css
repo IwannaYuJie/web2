@@ -185,3 +185,22 @@ canvas{display:block;width:100%;aspect-ratio:8/5;height:auto;border-radius:13px;
 @media(max-width:880px){.hero{padding:34px 4px 22px}.lede{font-size:15.5px}}
 @media(max-width:430px){.hud{grid-template-columns:repeat(2,1fr)}}
 @media(prefers-reduced-motion:reduce){.pdot,.trend{animation:none!important}}
+
+/* ── 排行榜 ── */
+.subbar{display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px 14px;border:1px solid rgba(47,227,180,.3);border-radius:12px;background:var(--mint-soft);flex-wrap:wrap}
+.subbar .submsg{font-size:14px}.subbar .submsg b{font-family:var(--mono);color:var(--mint);font-size:18px}
+.subname{flex:1;min-width:130px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:rgba(0,0,0,.28);color:var(--text);font-family:var(--sans);font-size:14px}
+.subname:focus{outline:none;border-color:var(--mint)}
+.subdone{color:var(--mint);font-weight:700;font-family:var(--mono);font-size:13.5px}
+.panel.lb{margin-top:16px}
+.lbrefresh{border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--muted);border-radius:8px;padding:5px 10px;font-family:var(--mono);font-size:11px;cursor:pointer}
+.lbrefresh:hover{color:var(--text)}
+.lblist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.lbrow{display:grid;grid-template-columns:32px 1fr auto auto;gap:12px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.lbrow.me{border-color:rgba(47,227,180,.45);background:linear-gradient(100deg,rgba(47,227,180,.12),var(--surface-2) 42%)}
+.lbrk{font-family:var(--mono);font-weight:700;text-align:center;color:var(--dim)}
+.lbrow.t1 .lbrk{color:#ffd45e}.lbrow.t2 .lbrk{color:#cfd8e3}.lbrow.t3 .lbrk{color:#ff9a4d}
+.lbname{font-weight:650;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbsc{font-family:var(--mono);font-weight:700;color:var(--mint)}
+.lbt{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.lbempty,.lbfail{color:var(--dim);font-family:var(--mono);font-size:12px;text-align:center;padding:22px 0;list-style:none}

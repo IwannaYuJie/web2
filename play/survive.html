@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#070a0f">
-<meta name="description" content="猫猫求生 — 躲避生存小游戏，冲刺闪避、连击涨分，活得越久越高分。">
+<meta name="description" content="猫猫求生 — 躲避生存小游戏，冲刺闪避、连击涨分，活得越久越高分，分数上全站排行榜。">
 <title>猫猫求生 · 喵喵游戏屋</title>
 <link rel="stylesheet" href="/assets/base.css">
 </head>
@@ -44,7 +44,21 @@
       <button class="btn go" id="start">开始游戏</button>
       <button class="btn gh" id="reset">重置</button>
     </div>
+    <div class="subbar" id="subbar" hidden></div>
     <p class="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>/方向键或拖动移动 · <kbd>空格</kbd>冲刺闪避（短暂无敌）· 吃 🐟 涨连击 · 躲红刺、<span style="color:#b46aff">紫色会追你</span> · 捡 🛡 护盾 / ⏳ 慢动作 / 💥 清屏</p>
+
+    <section class="panel lb">
+      <div class="phead">
+        <span class="pdot"></span>
+        <h2>全站排行榜</h2>
+        <span class="tag">TOP 10</span>
+        <span class="sp"></span>
+        <button class="lbrefresh" id="lbRefresh">刷新</button>
+      </div>
+      <div class="pbody">
+        <ol class="lblist" id="lbList"><li class="lbempty">加载中…</li></ol>
+      </div>
+    </section>
   </section>
 
   <footer class="ft">

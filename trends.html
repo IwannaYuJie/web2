@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<meta name="description" content="实时热搜看板 — 全球/美/英/日热搜，每 10 分钟同步，分钟级刷新。">
+<title>实时热搜 · 喵喵游戏屋</title>
+<link rel="stylesheet" href="/assets/base.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="hd">
+    <a class="logo" href="/"><span class="mk">🐱</span><b>喵喵游戏屋</b></a>
+    <nav class="hnav">
+      <a href="/">游戏厅</a>
+      <a href="/trends.html" class="on">实时热搜</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <span class="kick">实时热搜 · live trends</span>
+    <h1 style="font-size:clamp(30px,5vw,48px)">全球<span class="g">热搜</span>看板</h1>
+    <p class="lede">全球 / 美 / 英 / 日四地热搜，服务器每 10 分钟自动抓取，页面每分钟刷新。游戏玩累了，来看看世界在聊什么。</p>
+  </section>
+
+  <section class="panel" style="max-width:760px;margin:0 auto">
+    <div class="phead">
+      <span class="pdot"></span>
+      <h2>实时热搜</h2>
+      <span class="tag">LIVE TRENDS</span>
+      <span class="sp"></span>
+      <span class="upd" id="updated">同步中…</span>
+    </div>
+    <div class="pbody">
+      <div class="segs" id="segs"></div>
+      <div class="tlist" id="tlist"></div>
+    </div>
+  </section>
+
+  <footer class="ft">
+    <span>© <span id="yr"></span> 喵喵游戏屋 · 数据源 <a href="https://trends24.in" target="_blank" rel="noopener">Trends24</a></span>
+    <span><a href="/">← 返回游戏厅</a></span>
+  </footer>
+</main>
+<script src="/assets/trends.js"></script>
+</body>
+</html>

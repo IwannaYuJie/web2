@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070a0f">
+<meta name="description" content="猫猫求生 — 躲避生存小游戏，冲刺闪避、连击涨分，活得越久越高分。">
+<title>猫猫求生 · 喵喵游戏屋</title>
+<link rel="stylesheet" href="/assets/base.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="hd">
+    <a class="logo" href="/"><span class="mk">🐱</span><b>喵喵游戏屋</b></a>
+    <nav class="hnav">
+      <a href="/">游戏厅</a>
+      <a href="/trends.html">实时热搜</a>
+    </nav>
+  </header>
+
+  <section class="hero" style="padding:28px 6px 14px">
+    <a class="back" href="/">← 返回游戏厅</a>
+    <span class="kick" style="margin:14px 0 0">躲避生存 · survival</span>
+    <h1 style="font-size:clamp(30px,5vw,46px);margin-top:10px">猫猫<span class="g">求生</span></h1>
+  </section>
+
+  <section class="gpage">
+    <div class="grow">
+      <div class="lives">命 <span class="hearts" id="hearts"></span><span class="shieldn" id="shieldn"></span></div>
+      <button class="mute" id="mute" title="音效开关">🔊</button>
+    </div>
+    <div class="hud">
+      <div class="bw"><span>分数 SCORE</span><b id="score">0</b></div>
+      <div><span>存活 TIME</span><b id="time">0.0″</b></div>
+      <div><span>连击 COMBO</span><b id="combo">×1</b></div>
+      <div><span>最高 BEST</span><b id="best">0</b></div>
+    </div>
+    <div class="dashbar"><i id="dashfill"></i><label>冲刺 DASH</label></div>
+    <div class="stage">
+      <canvas id="cv" width="960" height="600"></canvas>
+      <button class="dashbtn" id="dashbtn">冲刺</button>
+    </div>
+    <div class="ctrl">
+      <button class="btn go" id="start">开始游戏</button>
+      <button class="btn gh" id="reset">重置</button>
+    </div>
+    <p class="hint"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>/方向键或拖动移动 · <kbd>空格</kbd>冲刺闪避（短暂无敌）· 吃 🐟 涨连击 · 躲红刺、<span style="color:#b46aff">紫色会追你</span> · 捡 🛡 护盾 / ⏳ 慢动作 / 💥 清屏</p>
+  </section>
+
+  <footer class="ft">
+    <span>© <span id="yr"></span> 喵喵游戏屋 · sbjumao.com</span>
+    <span><a href="/">← 更多游戏</a></span>
+  </footer>
+</main>
+<script src="/assets/survive.js"></script>
+</body>
+</html>
